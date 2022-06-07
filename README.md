@@ -1,2 +1,2 @@
 # 2048_rl
-A RL solution to playing the 2048 game,
+A RL solution to playing the 2048 game.
