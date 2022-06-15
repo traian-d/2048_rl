@@ -114,11 +114,6 @@ class Board:
         else:
             return self.to_np(), reward, False
 
-    def current_reward(self):
-        return self._current_reward
-
-    def total_reward(self):
-        return self._total_reward
 
 class Game:
     def __init__(self, action_func, reward_func=None, show=True, grid=None, delay=None):
