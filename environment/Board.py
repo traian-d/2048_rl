@@ -106,6 +106,7 @@ class Board:
             self._random_spawn()
             reward = self._reward_func(self._prev_grid, self._grid)
         else:
+            self._current_reward = self._invalid_act_reward
             reward = self._invalid_act_reward
         self._prev_grid = copy.deepcopy(self._grid)
         if not self._can_push():
@@ -113,6 +114,11 @@ class Board:
         else:
             return self.to_np(), reward, False
 
+    def current_reward(self):
+        return self._current_reward
+
+    def total_reward(self):
+        return self._total_reward
 
 class Game:
     def __init__(self, action_func, reward_func=None, show=True, grid=None, delay=None):
