@@ -25,7 +25,8 @@ class Board:
         return np.array([[self._grid['00'], self._grid['01'], self._grid['02'], self._grid['03']],
                          [self._grid['10'], self._grid['11'], self._grid['12'], self._grid['13']],
                          [self._grid['20'], self._grid['21'], self._grid['22'], self._grid['23']],
-                         [self._grid['30'], self._grid['31'], self._grid['32'], self._grid['33']]], dtype=np.int32)
+                         [self._grid['30'], self._grid['31'], self._grid['32'], self._grid['33']]], dtype=np.int32)\
+            .flatten()
 
     def _random_spawn(self, prob_of_4=0.1):
         import numpy as np
