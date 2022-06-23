@@ -12,7 +12,7 @@ class Board:
         else:
             self._grid = grid
         self._prev_grid = self._grid
-        self._reward_func = reward_func if reward_func else lambda *args: self._current_reward
+        self._reward_func = reward_func if reward_func else lambda *args: 1
         self._invalid_act_reward = invalid_act_reward
         self._state_changed = False
         self._current_reward = 0
@@ -50,13 +50,13 @@ class Board:
                 self._grid[l[nnz]] = 0
                 if c > 0 and not has_merged and self._grid[l[c - 1]] == self._grid[l[c]]:
                     self._grid[l[c - 1]] += self._grid[l[c - 1]]
-                    self._current_reward += self._grid[l[c - 1]]
+                    self._current_reward += self._reward_func(self._grid[l[c - 1]])
                     self._grid[l[c]] = 0
                 self._state_changed = True
                 has_merged = False
             if c < 3 and self._grid[l[c]] == self._grid[l[c + 1]]:
                 has_merged = True
-                self._grid[l[c]] += self._grid[l[c]]
+                self._grid[l[c]] += self._reward_func(self._grid[l[c]])
                 self._current_reward += self._grid[l[c]]
                 self._grid[l[c + 1]] = 0
                 self._state_changed = True
@@ -64,7 +64,8 @@ class Board:
         self._total_reward += self._current_reward
 
     def _push_all(self, lists):
-        self._current_reward = 0
+        # TODO: this should be handled better
+        self._current_reward = -1
         for l in lists:
             self._push(l)
 
@@ -105,13 +106,17 @@ class Board:
         self._action_map.get(action)()  # performs the action
         if self._state_changed:
             self._random_spawn()
-            reward = self._reward_func(self._prev_grid, self._grid)
+            reward = self._current_reward
         else:
             self._current_reward = self._invalid_act_reward
             reward = self._invalid_act_reward
         self._prev_grid = copy.deepcopy(self._grid)
         if not self._can_push():
+            # If the action was invalid (state hasn't changed) then just terminate
             return self.to_np(), self._total_reward, True
+        elif not self._state_changed:
+            # TODO: this should be handled better
+            return self.to_np(), self._invalid_act_reward, True
         else:
             return self.to_np(), reward, False
 
