@@ -20,6 +20,8 @@ class Board:
         self._action_map = {1: self._push_up, 0: self._push_down,
                             3: self._push_left, 2: self._push_right}
 
+        self._invalid_act_counter = 0
+
     def to_np(self):
         import numpy as np
         return np.array([[self._grid['00'], self._grid['01'], self._grid['02'], self._grid['03']],
@@ -112,13 +114,23 @@ class Board:
             reward = self._invalid_act_reward
         self._prev_grid = copy.deepcopy(self._grid)
         if not self._can_push():
-            # If the action was invalid (state hasn't changed) then just terminate
-            return self.to_np(), self._total_reward, True
+            # if self._total_reward > 10:
+            #     return self.to_np(), 1, True
+            return self.to_np(), self._current_reward, True
         elif not self._state_changed:
+            # If the action was invalid (state hasn't changed) then just terminate
             # TODO: this should be handled better
-            return self.to_np(), self._invalid_act_reward, True
+            self._invalid_act_counter += 1
+
+            # if self._invalid_act_counter >= 100 and not (self._invalid_act_counter % 100):
+            #     print(self._invalid_act_counter)
+
+            # if self._invalid_act_counter >= 1:
+            #     return self.to_np(), self._invalid_act_reward, True
+            return self.to_np(), self._invalid_act_reward, False
         else:
-            return self.to_np(), reward, False
+            self._invalid_act_counter = 0
+            return self.to_np(), self._current_reward, False
 
 
 class Game:
